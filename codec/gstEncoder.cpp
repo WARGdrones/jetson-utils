@@ -275,7 +275,19 @@ bool gstEncoder::buildLaunchStr()
 	
 	// select hardware codec to use
 	if( mOptions.codec == videoOptions::CODEC_H264 )
-		ss << GST_ENCODER_H264 << " bitrate=" << mOptions.bitRate << " ! video/x-h264 !  ";	// TODO:  investigate quality-level setting
+	{
+		if( uri.protocol == "rtp" )
+		{
+		// setting Keyframes
+			//  iframeinterval: Intra Frame occurrence frequency
+			//  idrinterval: Encoding IDR Frame occurance frequency (Keyframes)
+			// control-rate=0 sets VBR
+			// send keyframe every second
+			ss << GST_ENCODER_H264 << " maxperf-enable=true control-rate=0"  << " bitrate=" << mOptions.bitRate << " idrinterval=" << (int)mOptions.frameRate << " ! video/x-h264 !  ";	// TODO:  investigate quality-level setting
+		}
+		else 
+			ss << GST_ENCODER_H264  << " bitrate=" << mOptions.bitRate << " ! video/x-h264 !  ";	// TODO:  investigate quality-level setting
+	}
 	else if( mOptions.codec == videoOptions::CODEC_H265 )
 		ss << GST_ENCODER_H265 << " bitrate=" << mOptions.bitRate << " ! video/x-h265 ! ";
 	else if( mOptions.codec == videoOptions::CODEC_VP8 )
