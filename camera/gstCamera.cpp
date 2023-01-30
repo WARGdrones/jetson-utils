@@ -170,7 +170,8 @@ bool gstCamera::buildLaunchStr()
 			{
 				// ss << "format=(string)" << gst_format_to_string(mFormatYUV) << ", ";
 				ss << "nvv4l2camerasrc device=" << mOptions.resource.location << " ! video/x-raw(memory:NVMM), format=(string)UYVY, interlace-mode=progressive, " << "framerate=" << (int)mOptions.frameRate << "/1, width=(int)" << GetWidth() << ", height=(int)" << GetHeight() << " ! nvvidconv flip-method=" << mOptions.flipMethod << " ! " << "video/x-raw ! ";
-			}
+				// ss << "nvv4l2camerasrc device=" << mOptions.resource.location << " ! video/x-raw(memory:NVMM), format=(string)UYVY, interlace-mode=progressive, " << "framerate=" << (int)mOptions.frameRate << "/1, width=(int)" << GetWidth() << ", height=(int)" << GetHeight(); //<< " ! nvvidconv flip-method=" << mOptions.flipMethod << " ! " << "video/x-raw ! ";
+			}				
 			else 
 			{
 				ss << "v4l2src device=" << mOptions.resource.location << " do-timestamp=true ! ";
@@ -239,10 +240,10 @@ bool gstCamera::buildLaunchStr()
 				const bool use_nvvidconv = false;
 			#endif
 			
-			if( use_nvvidconv )
-				ss << "nvvidconv flip-method=" << mOptions.flipMethod << " ! " << output_format;
-			else
-				ss << "videoflip method=" << videoOptions::FlipMethodToStr(mOptions.flipMethod) << " ! ";  // the videoflip enum varies slightly, but the strings are the same
+			// if( use_nvvidconv )
+				// ss << "nvvidconv flip-method=" << mOptions.flipMethod << " ! " << output_format;
+			// else
+			// 	ss << "videoflip method=" << videoOptions::FlipMethodToStr(mOptions.flipMethod) << " ! ";  // the videoflip enum varies slightly, but the strings are the same
 		}
 		
 	#elif defined(__x86_64)
