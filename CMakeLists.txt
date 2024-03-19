@@ -86,9 +86,37 @@ if(ENABLE_NVMM)
 	add_definitions(-DENABLE_NVMM)
 endif()
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GSTREAMER REQUIRED 
+	gstreamer-1.0 
+	gstreamer-app-1.0 
+	gstreamer-video-1.0 
+	gstreamer-pbutils-1.0 
+	gstreamer-webrtc-1.0 
+	gstreamer-sdp-1.0 
+	gstreamer-rtsp-server-1.0
+)
+pkg_search_module(GLIB REQUIRED glib-2.0) 
+pkg_check_modules(JSONGLIB REQUIRED json-glib-1.0)
+pkg_check_modules(LIBSOUP REQUIRED libsoup-2.4)
+pkg_check_modules(GL REQUIRED gl glu glew)
+
+
+if(GSTREAMER_FOUND)
+    message(STATUS "GStreamer found: ${GSTREAMER_LIBRARIES}")
+    include_directories(${GSTREAMER_INCLUDE_DIRS})
+    link_directories(${GSTREAMER_LIBRARY_DIRS})
+else()
+    message(FATAL_ERROR "GStreamer not found")
+endif()
+
 # additional paths for includes and libraries
-include_directories(${PROJECT_INCLUDE_DIR}/jetson-utils)
-include_directories(/usr/include/gstreamer-1.0 /usr/include/glib-2.0 /usr/include/libxml2 /usr/include/json-glib-1.0 /usr/include/libsoup-2.4 /usr/lib/${CMAKE_SYSTEM_PROCESSOR}-linux-gnu/gstreamer-1.0/include /usr/lib/${CMAKE_SYSTEM_PROCESSOR}-linux-gnu/glib-2.0/include/)
+include_directories(
+	${PROJECT_INCLUDE_DIR}/jetson-utils
+	${LIBSOUP_INCLUDE_DIRS}
+	${JSONGLIB_INCLUDE_DIRS}
+)
+
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
 	include_directories(/usr/src/jetson_multimedia_api/include)
@@ -100,7 +128,14 @@ file(GLOB jetsonUtilitySources *.cpp camera/*.cpp codec/*.cpp cuda/*.cu cuda/*.c
 file(GLOB jetsonUtilityIncludes *.h *.hpp camera/*.h codec/*.h cuda/*.h cuda/*.cuh display/*.h image/*.h image/*.inl input/*.h network/*.h threads/*.h threads/*.inl video/*.h)
 
 cuda_add_library(jetson-utils SHARED ${jetsonUtilitySources})
-target_link_libraries(jetson-utils GL GLU GLEW gstreamer-1.0 gstapp-1.0 gstpbutils-1.0 gstwebrtc-1.0 gstsdp-1.0 gstrtspserver-1.0 json-glib-1.0 soup-2.4 ${CUDA_nppicc_LIBRARY})	
+target_link_libraries(jetson-utils 
+	${CUDA_nppicc_LIBRARY}
+	${GSTREAMER_LIBRARIES} 
+	${GLIB_LIBRARIES} 
+	${JSONGLIB_LIBRARIES} 
+	${LIBSOUP_LIBRARIES} 
+	${GL_LIBRARIES}
+)	
 
 if(NVBUF_UTILS)
 	target_link_libraries(jetson-utils nvbuf_utils)
@@ -126,11 +161,11 @@ install(TARGETS jetson-utils DESTINATION lib EXPORT jetson-utilsConfig)
 install(EXPORT jetson-utilsConfig DESTINATION share/jetson-utils/cmake)
 
 # build python bindings + samples
-add_subdirectory(python)
+# add_subdirectory(python)
 add_subdirectory(video/video-viewer)
 
-#add_subdirectory(camera/camera-viewer)
-#add_subdirectory(display/gl-display-test)
-#add_subdirectory(network/webrtc-server)
-#add_subdirectory(network/rtsp-server)
+add_subdirectory(camera/camera-viewer)
+add_subdirectory(display/gl-display-test)
+add_subdirectory(network/webrtc-server)
+add_subdirectory(network/rtsp-server)
 
