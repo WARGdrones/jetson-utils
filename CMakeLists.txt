@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 
 # determine if jetson-utils is being built as a submodule inside another repo,
 # or if it's being build standalone (if the later, we need to do some configuration)
@@ -11,7 +11,7 @@ else()
 	message("-- jetson-utils:  building as standalone")
 	
 	# standalone project
-	project(jetson-utils)
+	project(jetson-utils VERSION 0.1.0)
   
 	# -std=gnu++11
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-write-strings")	
@@ -153,6 +153,9 @@ endforeach()
 foreach(include ${jetsonUtilityIncludes})
 	install(FILES "${include}" DESTINATION include/jetson-utils)
 endforeach()
+
+# set the version properties of the target
+set_target_properties(jetson-utils PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR})
 
 # install the shared library
 install(TARGETS jetson-utils DESTINATION lib EXPORT jetson-utilsConfig)
