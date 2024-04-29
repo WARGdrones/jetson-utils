@@ -9,7 +9,6 @@ if(hasParent)
 	message("-- jetson-utils:  building as submodule, ${hasParent}")
 else()
 	message("-- jetson-utils:  building as standalone")
-	
 	# standalone project
 	project(jetson-utils VERSION 0.1.0)
   
@@ -70,7 +69,7 @@ else()
 endif()
 
 # option for enabling/disabling NVMM memory in multimedia stack
-find_library(NVBUF_UTILS NAMES nvbuf_utils PATHS /usr/lib/aarch64-linux-gnu/tegra)
+find_library(NVBUF_UTILS NAMES nvbuf_utils nvbufsurface PATHS /usr/lib/aarch64-linux-gnu/tegra)
 message("-- nvbuf_utils:  ${NVBUF_UTILS}")
 
 if(NVBUF_UTILS)
@@ -138,7 +137,10 @@ target_link_libraries(jetson-utils
 )	
 
 if(NVBUF_UTILS)
-	target_link_libraries(jetson-utils nvbuf_utils)
+	target_link_libraries(jetson-utils ${NVBUF_UTILS})
+	if(CUDA_VERSION_MAJOR GREATER 10)
+		target_link_libraries(jetson-utils nvbufsurftransform)
+	endif()
 endif()
 
 # transfer all headers to the include directory 
