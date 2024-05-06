@@ -139,7 +139,9 @@ target_link_libraries(jetson-utils
 if(NVBUF_UTILS)
 	target_link_libraries(jetson-utils ${NVBUF_UTILS})
 	if(CUDA_VERSION_MAJOR GREATER 10)
-		target_link_libraries(jetson-utils nvbufsurftransform)
+	find_library(NVBUFSURFTRANSFORM NAMES nvbufsurftransform PATHS /usr/lib/aarch64-linux-gnu/tegra)
+	message("-- NVBUFSURFTRANSFORM:  ${NVBUFSURFTRANSFORM}")
+		target_link_libraries(jetson-utils ${NVBUFSURFTRANSFORM})
 	endif()
 endif()
 
