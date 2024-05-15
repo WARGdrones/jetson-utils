@@ -62,7 +62,9 @@ gstBufferManager::gstBufferManager( videoOptions* options )
 // destructor
 gstBufferManager::~gstBufferManager()
 {
+#ifdef ENABLE_NVMM
 	NvBufSurfaceUnMap(mSurfConv, -1, -1);
+#endif
 }
 
 
