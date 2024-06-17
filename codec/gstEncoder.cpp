@@ -854,6 +854,7 @@ void gstEncoder::onWebsocketMessage( WebRTCPeer* peer, const char* message, size
 		
 		if( stun_server != NULL && strlen(stun_server) > 0 )
 		{
+			LogVerbose(LOG_WEBRTC "WebRTC peer using STUN server: %s\n", stun_server);
 		    std::string stun_url = std::string("stun://") + stun_server;
 		    g_object_set(peer_context->webrtcbin, "stun-server", stun_url.c_str(), NULL);
 		}
@@ -872,7 +873,8 @@ void gstEncoder::onWebsocketMessage( WebRTCPeer* peer, const char* message, size
 		// link the queue to webrtc bin
 		GstPad* srcpad = gst_element_get_static_pad(peer_context->queue, "src");
 		g_assert_nonnull(srcpad);
-		GstPad* sinkpad = gst_element_get_request_pad(peer_context->webrtcbin, "sink_%u");
+		// GstPad* sinkpad = gst_element_get_request_pad(peer_context->webrtcbin, "sink_%u");
+		GstPad* sinkpad = gst_element_request_pad_simple(peer_context->webrtcbin, "sink_%u");
 		g_assert_nonnull(sinkpad);
 		int ret = gst_pad_link(srcpad, sinkpad);
 		g_assert_cmpint(ret, ==, GST_PAD_LINK_OK);
