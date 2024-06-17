@@ -424,6 +424,7 @@ WebRTCServer* WebRTCServer::Create( uint16_t port, const char* stun_server, cons
     }
 	else if( strcasecmp(stun_server, "disable") == 0 || strcasecmp(stun_server, "disabled") == 0 || strcasecmp(stun_server, "off") == 0 ) 
 	{
+		LogInfo(LOG_WEBRTC "STUN server disabled!\n");
 	    stun_server = NULL;
 	}
 	    
