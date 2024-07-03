@@ -69,14 +69,19 @@ else()
 endif()
 
 # option for enabling/disabling NVMM memory in multimedia stack
-find_library(NVBUF_UTILS NAMES nvbuf_utils nvbufsurface PATHS /usr/lib/aarch64-linux-gnu/tegra)
+find_library(NVBUF_UTILS NAMES nvbuf_utils nvbufsurface PATHS /usr/lib/aarch64-linux-gnu/tegra /opt/nvidia/deepstream/deepstream/lib)
 message("-- nvbuf_utils:  ${NVBUF_UTILS}")
 
 if(NVBUF_UTILS)
 	set(ENABLE_NVMM_DEFAULT ON)
 else()
 	set(ENABLE_NVMM_DEFAULT OFF)
+
 endif()
+
+#add nvbufsurface headers
+include_directories(/opt/nvidia/deepstream/deepstream/sources/includes)
+
 
 option(ENABLE_NVMM "Enable use of NVMM zero-copy memory in video and camera streaming" ${ENABLE_NVMM_DEFAULT})
 message("-- NVMM zero-copy memory:  ENABLE_NVMM=${ENABLE_NVMM}")
@@ -139,7 +144,7 @@ target_link_libraries(jetson-utils
 if(NVBUF_UTILS)
 	target_link_libraries(jetson-utils ${NVBUF_UTILS})
 	if(CUDA_VERSION_MAJOR GREATER 10)
-	find_library(NVBUFSURFTRANSFORM NAMES nvbufsurftransform PATHS /usr/lib/aarch64-linux-gnu/tegra)
+	find_library(NVBUFSURFTRANSFORM NAMES nvbufsurftransform PATHS /usr/lib/aarch64-linux-gnu/tegra /opt/nvidia/deepstream/deepstream/lib)
 	message("-- NVBUFSURFTRANSFORM:  ${NVBUFSURFTRANSFORM}")
 		target_link_libraries(jetson-utils ${NVBUFSURFTRANSFORM})
 	endif()
